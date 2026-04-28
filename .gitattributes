@@ -2,7 +2,6 @@
 *.h linguist-language=C++
 *.inc linguist-language=C++
 thirdparty/* linguist-vendored
-
 # Normalize EOL for all files that Git considers text files
 * text=auto eol=lf
 # Except for Windows-only / Visual Studio files
@@ -12,7 +11,6 @@ thirdparty/* linguist-vendored
 misc/msvs/* eol=crlf
 # And some test files where the EOL matters
 *.test.txt -text
-
 # The above only works properly for Git 2.10+, so for older versions
 # we need to manually list the binary files we don't want modified.
 *.icns binary
@@ -21,3 +19,5 @@ misc/msvs/* eol=crlf
 *.png binary
 *.ttf binary
 *.tza binary
+tools/godot filter=lfs diff=lfs merge=lfs -text
+tools/export_templates/**/* filter=lfs diff=lfs merge=lfs -text
