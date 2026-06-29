@@ -791,8 +791,12 @@ void GDScriptByteCodeGenerator::write_end_ternary() {
 
 void GDScriptByteCodeGenerator::write_set(const Address &p_target, const Address &p_index, const Address &p_source) {
 	if (HAS_BUILTIN_TYPE(p_target)) {
+		// Array elements are Variant (indexed element type is NIL). Still use the validated
+		// indexed setter when the index is a known int: skips Variant::set's runtime index-type
+		// ladder. Typed Array[T] element checks remain in Array::set via validated_set.
 		if (IS_BUILTIN_TYPE(p_index, Variant::INT) && Variant::get_member_validated_indexed_setter(p_target.type.builtin_type) &&
-				IS_BUILTIN_TYPE(p_source, Variant::get_indexed_element_type(p_target.type.builtin_type))) {
+				(IS_BUILTIN_TYPE(p_source, Variant::get_indexed_element_type(p_target.type.builtin_type)) ||
+						p_target.type.builtin_type == Variant::ARRAY)) {
 			// Use indexed setter instead.
 			Variant::ValidatedIndexedSetter setter = Variant::get_member_validated_indexed_setter(p_target.type.builtin_type);
 			append_opcode(GDScriptFunction::OPCODE_SET_INDEXED_VALIDATED);
